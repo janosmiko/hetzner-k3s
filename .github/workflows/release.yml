@@ -1,0 +1,116 @@
+---
+name: Release
+
+on:
+#  push:
+#    tags:
+#      - 'v*'
+  release:
+    types:
+      - created
+      - edited
+
+jobs:
+#  goreleaser:
+#    runs-on: ubuntu-latest
+#    steps:
+#      -
+#        name: Checkout
+#        uses: actions/checkout@v3
+#        with:
+#          fetch-depth: 0
+#      -
+#        name: Set up Go
+#        uses: actions/setup-go@v3
+#      -
+#        name: Run GoReleaser
+#        uses: goreleaser/goreleaser-action@v3
+#        with:
+#          version: latest
+#          args: release --rm-dist
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#          HOMEBREW_TAP_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#  releases-matrix:
+#    name: Release Go Binary
+#    runs-on: ubuntu-latest
+#    strategy:
+#      matrix:
+#        goos: [ linux, windows, darwin ]
+#        goarch: [ "386", amd64, arm64 ]
+#        exclude:
+#          - goarch: "386"
+#            goos: darwin
+#          - goarch: arm64
+#            goos: windows
+#    steps:
+#      - name: Set output
+#        id: vars
+#        run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+#      - uses: actions/checkout@v3
+#      - uses: wangyoucao577/go-release-action@v1.30
+#        with:
+#          github_token: ${{ secrets.GITHUB_TOKEN }}
+#          goos: ${{ matrix.goos }}
+#          goarch: ${{ matrix.goarch }}
+#          goversion: "1.19"
+#          project_path: "./cmd/hetzner-k3s"
+#          binary_name: "hetzner-k3s"
+#          extra_files: LICENSE.txt README.md
+#          overwrite: true
+#          pre_command: "go get -v -t -d ./... "
+#          ldflags: "-s -w -X 'hetzner-k3s/cmd/commands.Version=${{ steps.vars.outputs.tag }}'"
+#          asset_name: hetzner-k3s-${{ matrix.goos }}-${{ matrix.goarch }}
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            janosmiko/hetzner-k3s
+            ghcr.io/janosmiko/hetzner-k3s
+          tags: |
+            type=ref,event=tag
+            type=semver,pattern={{version}}
+            type=semver,pattern=v{{major}}.{{minor}}
+            type=semver,pattern=v{{major}}
+            type=sha
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      -
+        name: Login to DockerHub
+        uses: docker/login-action@v2
+        if: github.event_name != 'pull_request'
+        with:
+          push: ${{ github.event_name != 'pull_request' }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      -
+        name: Login to GHCR
+        uses: docker/login-action@v2
+        if: github.event_name != 'pull_request'
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      -
+        name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      -
+        name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          platforms: linux/amd64,linux/arm64
