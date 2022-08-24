@@ -82,7 +82,9 @@ func (c *Client) AvailableReleases(token, filter string, latest bool) ([]string,
 func (c *Client) fetchReleases(token string) ([]*github.RepositoryRelease, error) {
 	var (
 		allReleases []*github.RepositoryRelease
-		opt         = &github.ListOptions{}
+		opt         = &github.ListOptions{
+			PerPage: 100,
+		}
 	)
 
 	for {
