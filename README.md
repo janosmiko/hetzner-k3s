@@ -125,7 +125,7 @@ example below:
 ```yaml
 ---
 hetzner_token: <your token>
-# github_token: <your token> # Optional
+#github_token: <your token> # Optional
 cluster_name: test
 kubeconfig_path: "/cluster/kubeconfig"
 k3s_version: v1.21.3+k3s1
@@ -135,10 +135,10 @@ private_ssh_key_path: "/root/.ssh/id_rsa"
 # Using these fields you can apply various firewall restrictions for SSH and Kubernetes API access.
 # Defaults to ALLOW ANY IP address (0.0.0.0/0)
 #
-# ssh_allowed_networks:
-#   - 0.0.0.0/0
-# api_allowed_networks:
-#   - 0.0.0.0/0
+#ssh_allowed_networks:
+#  - 0.0.0.0/0
+#api_allowed_networks:
+#  - 0.0.0.0/0
 
 verify_host_key: false
 location: nbg1
@@ -171,11 +171,15 @@ autoscaling_node_pools:
 # Pass additional parameters to the Cluster Autoscaler.
 # https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/FAQ.md#what-are-the-parameters-to-ca
 #
-# cluster_autoscaler_args:
-#   - --scan-interval=2s
-#   - --scale-down-delay-after-add=1h0s
-#   - --scale-down-unneeded-time=1h0s
-#   - --scale-down-unready-time=10m0s
+#cluster_autoscaler_args:
+#  - --scan-interval=2s
+#  - --scale-down-delay-after-add=1h0s
+#  - --scale-down-unneeded-time=1h0s
+#  - --scale-down-unready-time=10m0s
+#  - --scale-down-utilization-threshold=0.5
+#  - --ignore-daemonsets-utilization
+#  - --ignore-mirror-pods-utilization
+#  - --v=4
 
 additional_packages:
   - somepackage
@@ -188,43 +192,43 @@ enable_encryption: true
 #
 # Configure various arguments for kubernetes components
 #
-# kube_api_server_args:
-#   - arg1
-#   - ...
-# kube_scheduler_args:
-#   - arg1
-#   - ...
-# kube_controller_manager_args:
-#   - arg1
-#   - ...
-# kube_cloud_controller_manager_args:
-#   - arg1
-#   - ...
-# kubelet_args:
-#   - arg1
-#   - ...
-# kube_proxy_args:
-#   - arg1
-#   - ...
+#kube_api_server_args:
+#  - arg1
+#  - ...
+#kube_scheduler_args:
+#  - arg1
+#  - ...
+#kube_controller_manager_args:
+#  - arg1
+#  - ...
+#kube_cloud_controller_manager_args:
+#  - arg1
+#  - ...
+#kubelet_args:
+#  - arg1
+#  - ...
+#kube_proxy_args:
+#  - arg1
+#  - ...
 #
 # Specify if you want to use an existing network, otherwise one will be created for this cluster.
 # existing_network: <network-name> or <network-id>
 # This setting allows you to override the default nameservers (1.1.1.1 and 1.0.0.1)
 # 
-# default_nameservers:
-#   - 8.8.8.8
-#   - 1.1.1.1
-#   - 1.0.0.1
+#default_nameservers:
+#  - 8.8.8.8
+#  - 1.1.1.1
+#  - 1.0.0.1
 #
 # Enabling this will blacklist longhorn devices in multipathd config (required for longhorn storage)
 # https://longhorn.io/kb/troubleshooting-volume-with-multipath/
 #
-# fix_multipath: true
+#fix_multipath: true
 #
 # Running the create-cluster command always overrides the default Kubernetes Storage Class to hcloud-volume.
 # By disabling this setting you can disable this behaviour leaving the default Kubernetes Storage Class as it is.
 #
-# hcloud_volume_is_default_storage_class: false
+#hcloud_volume_is_default_storage_class: false
 
 ```
 
