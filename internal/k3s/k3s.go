@@ -40,16 +40,20 @@ func NewClient() *Client {
 	logger := loggerpkg.InitLogger()
 	cluster := clusterpkg.NewCluster(config)
 
-	return &Client{
+	c := Client{
 		logger:  logger,
 		cluster: cluster,
 		hetzner: hetznerpkg.NewClient(logger, cluster.HetznerToken),
-		sshclient: sshpkg.NewClient(logger, "root", cluster.PrivateSSHKeyPath).
-			SetTimeout(30).
-			SetPassphrase(cluster.PrivateSSHKeyPassphrase).
-			SetPrintOutput(true).
-			SetVerifyHostKey(cluster.VerifyHostKey),
 	}
+
+	// Set ssh client after the k3s client is ready, so we can resolve the privateSSHKeyPath if it contains "~".
+	c.sshclient = sshpkg.NewClient(logger, "root", c.privateSSHKeyPath()).
+		SetTimeout(30).
+		SetPassphrase(cluster.PrivateSSHKeyPassphrase).
+		SetPrintOutput(true).
+		SetVerifyHostKey(cluster.VerifyHostKey)
+
+	return &c
 }
 
 func (c *Client) k3sVersion() string {
