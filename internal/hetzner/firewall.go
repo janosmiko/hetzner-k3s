@@ -27,6 +27,11 @@ func (c *Client) CreateFirewall(ctx context.Context, cluster *cluster.Cluster) (
 				return nil, fmt.Errorf("cannot set firewall rules: %w", err)
 			}
 
+			err = c.applyResourceLabels(ctx, cluster, fw)
+			if err != nil {
+				return nil, err
+			}
+
 			c.logger.Sugar().Infof("Firewall %s exists.", firewallName)
 
 			return fw, nil
@@ -47,6 +52,11 @@ func (c *Client) CreateFirewall(ctx context.Context, cluster *cluster.Cluster) (
 			return nil, fmt.Errorf("cannot create firewall: %w", err)
 		}
 		fw = fwresults.Firewall
+
+		err = c.applyResourceLabels(ctx, cluster, fw)
+		if err != nil {
+			return nil, err
+		}
 
 		c.logger.Sugar().Infof("...firewall %s created.", firewallName)
 
@@ -135,6 +145,31 @@ func (c *Client) DeleteFirewall(ctx context.Context, firewall *hcloud.Firewall) 
 	}
 
 	c.logger.Sugar().Infof("...firewall %s deleted.", firewall.Name)
+
+	return nil
+}
+
+func (c *Client) applyResourceLabels(ctx context.Context, cluster *cluster.Cluster, fw *hcloud.Firewall) error {
+	for _, v := range cluster.AutoscalingNodePools {
+		_, _, err := c.Client.Firewall.ApplyResources(
+			ctx, fw,
+			[]hcloud.FirewallResource{
+				{
+					Type: hcloud.FirewallResourceTypeLabelSelector,
+					LabelSelector: &hcloud.FirewallResourceLabelSelector{
+						Selector: fmt.Sprintf(
+							"hcloud/node-group=%s-%s-pool-%s-as", cluster.ClusterName,
+							v.InstanceType, v.Name,
+						),
+					},
+				},
+			},
+		)
+
+		if err != nil && !hcloud.IsError(err, hcloud.ErrorCodeFirewallAlreadyApplied) {
+			return fmt.Errorf("cannot apply firewall resources: %w", err)
+		}
+	}
 
 	return nil
 }
