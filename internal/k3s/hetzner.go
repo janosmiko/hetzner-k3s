@@ -127,6 +127,19 @@ func (c *Client) deployHetznerCSIDriver() error {
 
 	c.logger.Info("...CSI Driver deployed")
 
+	if c.cluster.ScheduleCSIControllerOnMaster {
+		c.logger.Info("Updating Hetzner CSI Controller...")
+
+		err = shell.NewClient(c.logger).RunCommand(
+			c.hetznerCSIControllerUpdateData(), shell.WithEnv("KUBECONFIG="+c.kubeconfigPath()),
+		)
+		if err != nil {
+			return fmt.Errorf("cannot update hetzner csi controller: %w", err)
+		}
+
+		c.logger.Info("...CSI Controller updated.")
+	}
+
 	return nil
 }
 
@@ -186,27 +199,121 @@ func (c *Client) hetznerCSIDriverData() string {
 	return fmt.Sprintf("kubectl apply -f - <<-EOF\n%s\nEOF", yaml)
 }
 
+// Upgraded CSI Controller data to make it possible to run it on master nodes.
+func (c *Client) hetznerCSIControllerUpdateData() string {
+	yaml := `apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hcloud-csi-controller
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hcloud-csi-controller
+  template:
+    metadata:
+      labels:
+        app: hcloud-csi-controller
+    spec:
+      tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/master
+        - key: "CriticalAddonsOnly"
+          operator: "Equal"
+          value: "true"
+          effect: "NoExecute"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: node-role.kubernetes.io/master
+                    operator: Exists
+      containers:
+      - image: k8s.gcr.io/sig-storage/csi-attacher:v3.2.1
+        name: csi-attacher
+        volumeMounts:
+        - mountPath: /run/csi
+          name: socket-dir
+      - image: k8s.gcr.io/sig-storage/csi-resizer:v1.2.0
+        name: csi-resizer
+        volumeMounts:
+        - mountPath: /run/csi
+          name: socket-dir
+      - args:
+        - --feature-gates=Topology=true
+        - --default-fstype=ext4
+        image: k8s.gcr.io/sig-storage/csi-provisioner:v2.2.2
+        name: csi-provisioner
+        volumeMounts:
+        - mountPath: /run/csi
+          name: socket-dir
+      - command:
+        - /bin/hcloud-csi-driver-controller
+        env:
+        - name: CSI_ENDPOINT
+          value: unix:///run/csi/socket
+        - name: METRICS_ENDPOINT
+          value: 0.0.0.0:9189
+        - name: ENABLE_METRICS
+          value: "true"
+        - name: KUBE_NODE_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: spec.nodeName
+        - name: HCLOUD_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: token
+              name: hcloud
+        image: hetznercloud/hcloud-csi-driver:latest
+        imagePullPolicy: Always
+        livenessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /healthz
+            port: healthz
+          initialDelaySeconds: 10
+          periodSeconds: 2
+          timeoutSeconds: 3
+        name: hcloud-csi-driver
+        ports:
+        - containerPort: 9189
+          name: metrics
+        - containerPort: 9808
+          name: healthz
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /run/csi
+          name: socket-dir
+      - image: k8s.gcr.io/sig-storage/livenessprobe:v2.3.0
+        imagePullPolicy: Always
+        name: liveness-probe
+        volumeMounts:
+        - mountPath: /run/csi
+          name: socket-dir
+      serviceAccountName: hcloud-csi-controller
+      volumes:
+      - emptyDir: {}
+        name: socket-dir`
+
+	return fmt.Sprintf("kubectl apply -f - <<-EOF\n%s\nEOF", yaml)
+}
+
+// It has to be deleted before applying because fsGroupPolicy is an immutable field.
 func (c *Client) hetznerCSIDriverDataDelete() string {
-	resp, err := http.Get(
-		`https://raw.githubusercontent.com/hetznercloud/csi-driver/master/deploy/kubernetes/hcloud-csi.yml`,
-	)
-	if err != nil {
-		c.logger.Sugar().Fatal("download failed: %s", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		c.logger.Sugar().Fatal("bad status: %s", resp.Status)
-	}
-
-	var buffer bytes.Buffer
-
-	_, err = io.Copy(&buffer, resp.Body)
-	if err != nil {
-		c.logger.Sugar().Fatal("cannot copy response to buffer: %s", err)
-	}
-
-	yaml := buffer.String()
+	yaml := `apiVersion: storage.k8s.io/v1
+kind: CSIDriver
+metadata:
+  name: csi.hetzner.cloud
+spec:
+  attachRequired: true
+  podInfoOnMount: true
+  volumeLifecycleModes:
+  - Persistent
+  fsGroupPolicy: File`
 
 	return fmt.Sprintf("kubectl delete -f - <<-EOF\n%s\nEOF", yaml)
 }

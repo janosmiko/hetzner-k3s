@@ -110,7 +110,7 @@ following from inside the directory where you have the config file for the clust
 docker run --rm -it \
   -v ${PWD}:/cluster \
   -v ${HOME}/.ssh:/tmp/.ssh \
-  janosmiko/hetzner-k3s:v0.1.2 \
+  janosmiko/hetzner-k3s:v0.1.3 \
   create-cluster \
   --config-file /cluster/test.yaml
 ```
@@ -229,7 +229,12 @@ enable_encryption: true
 # By disabling this setting you can disable this behaviour leaving the default Kubernetes Storage Class as it is.
 #
 #hcloud_volume_is_default_storage_class: false
-
+#
+# Hcloud CSI Controller Deployment is scheduled on workers by default. If you enable this setting, the deployment will
+# be upgraded to run on 
+#
+#schedule_csi_controller_on_master: false
+#
 ```
 
 It should hopefully be self-explanatory; you can run `hetzner-k3s releases` to see a list of the available releases from

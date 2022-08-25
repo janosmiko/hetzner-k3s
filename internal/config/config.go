@@ -43,6 +43,7 @@ type Config struct {
 	NetworkIPRange                    string             `mapstructure:"network_ip_range" validate:"omitempty,cidr"`
 	HCloudVolumeIsDefaultStorageClass bool               `mapstructure:"hcloud_volume_is_default_storage_class" validate:"-"`
 	FixMultipath                      bool               `mapstructure:"fix_multipath" validate:"-"`
+	ScheduleCSIControllerOnMaster     bool               `mapstructure:"schedule_csi_controller_on_master" validate:"-"`
 	Image                             string             `mapstructure:"image" validate:"-"`
 }
 
@@ -99,6 +100,7 @@ func InitViper() {
 	viper.SetDefault("network_ip_range", "10.0.0.0/16")
 	viper.SetDefault("api_allowed_networks", []string{"0.0.0.0/0"})
 	viper.SetDefault("ssh_allowed_networks", []string{"0.0.0.0/0"})
+	viper.SetDefault("schedule_csi_controller_on_master", false)
 
 	// Bind on Environment Variables
 	_ = viper.BindEnv("hetzner_token")
