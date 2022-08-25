@@ -30,7 +30,7 @@ autoscaling support) takes about **a couple of minutes** only. This includes
 - installing the [Kubernetes Cluster Autoscaler](https://github.com/kubernetes/autoscaler) to make the cluster
   autoscaling possible
 
-See roadmap [here](https://github.com/janosmiko/hetzner-k3s/projects/1) for the features planned or in progress.
+See roadmap [here](https://github.com/users/janosmiko/projects/1) for the features planned or in progress.
 
 Also see this [wiki page](https://github.com/vitobotta/hetzner-k3s/wiki/Tutorial:---Setting-up-a-cluster) for a tutorial
 on how to set up a cluster with the most common setup to get you started.
