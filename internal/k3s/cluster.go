@@ -772,7 +772,7 @@ func (c *Client) userData() string {
 	if c.cluster.FixMultipath {
 		postCreateCommands = append(
 			postCreateCommands,
-			`if ! grep -q blacklist /etc/multipath.conf; then echo -e 'blacklist {\ndevnode "^sd[a-z0-9]+"\n}' >> /etc/multipath.conf; fi`,
+			`if ! grep -q blacklist /etc/multipath.conf; then printf 'blacklist {\n    devnode "^sd[a-z0-9]+"\n}' >> /etc/multipath.conf; fi`,
 			`systemctl restart multipathd.service`,
 		)
 	}
