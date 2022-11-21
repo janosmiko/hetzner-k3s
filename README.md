@@ -110,7 +110,7 @@ following from inside the directory where you have the config file for the clust
 docker run --rm -it \
   -v ${PWD}:/cluster \
   -v ${HOME}/.ssh:/tmp/.ssh \
-  janosmiko/hetzner-k3s:v0.1.4 \
+  janosmiko/hetzner-k3s:v0.1.5 \
   create-cluster \
   --config-file /cluster/test.yaml
 ```

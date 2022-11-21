@@ -343,7 +343,7 @@ func (c *Client) kubeAPIServerArgsList() string {
 
 	res := ``
 	for _, v := range c.cluster.KubeAPIServerArgs {
-		res += fmt.Sprintf(`--kube-api-server-arg="%s" `, v)
+		res += fmt.Sprintf(`--kube-apiserver-arg="%s" `, v)
 	}
 
 	return res
