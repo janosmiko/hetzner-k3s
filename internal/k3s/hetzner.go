@@ -315,7 +315,7 @@ spec:
   - Persistent
   fsGroupPolicy: File`
 
-	return fmt.Sprintf("kubectl delete -f - <<-EOF\n%s\nEOF", yaml)
+	return fmt.Sprintf("kubectl delete --ignore-not-found=true -f - <<-EOF\n%s\nEOF", yaml)
 }
 
 func (c *Client) deployHetznerClusterAutoscaler() error {
