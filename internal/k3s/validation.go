@@ -273,7 +273,8 @@ func (c *Client) validateMasterLocation() error {
 			"invalid location for master nodes - "+
 				"valid locations: nbg1 (Nuremberg, Germany), "+
 				"fsn1 (Falkenstein, Germany), hel1 (Helsinki, "+
-				"Finland) or ash (Ashburn, Virginia, USA): %w",
+				"Finland), ash (Ashburn, Virginia, USA) "+
+				"or hil (Hillsboro, Oregon, USA) (H: %w",
 			err,
 		)
 	}

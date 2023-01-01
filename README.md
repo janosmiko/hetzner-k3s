@@ -264,7 +264,7 @@ You can specify any number of worker node pools for example to have mixed nodes 
 workloads.
 
 At the moment Hetzner Cloud has four locations: two in Germany (`nbg1`, Nuremberg and `fsn1`, Falkenstein), one in
-Finland (`hel1`, Helsinki) and one in the USA (`ash`, Ashburn, Virginia). Please note that the Ashburn, Virginia
+Finland (`hel1`, Helsinki) and two in the USA (`ash`, Ashburn, Virginia and `hil`, Hillsboro, Oregon). Please note that the Ashburn, Virginia
 location has just been announced and it's limited to AMD instances for now.
 
 For the available instance types and their specs, either check from inside a project when adding a server manually or
