@@ -821,11 +821,12 @@ func (c *Client) clusterNetworkZone() string {
 		return c.cluster.ClusterNetworkZone
 	}
 
-	if c.location() == "ash" {
+	switch c.location() {
+	case "ash":
 		c.cluster.ClusterNetworkZone = "us-east"
-	} else if c.location() == "hil" {
+	case "hil":
 		c.cluster.ClusterNetworkZone = "us-west"
-	} else {
+	default:
 		c.cluster.ClusterNetworkZone = "eu-central"
 	}
 
