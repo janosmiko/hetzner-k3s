@@ -23,7 +23,7 @@ type Config struct {
 	SSHAllowedNetworks                []string           `mapstructure:"ssh_allowed_networks" validate:"omitempty,dive,required,cidr"`
 	APIAllowedNetworks                []string           `mapstructure:"api_allowed_networks" validate:"omitempty,dive,cidr"`
 	VerifyHostKey                     bool               `mapstructure:"verify_host_key" validate:"-"`
-	Location                          string             `mapstructure:"location" validate:"required,oneof=nbg1 fsn1 hel1 ash"`
+	Location                          string             `mapstructure:"location" validate:"required,oneof=nbg1 fsn1 hel1 ash hil"`
 	ScheduleWorkloadsOnMasters        bool               `mapstructure:"schedule_workloads_on_masters" validate:"-"`
 	Masters                           MasterConfig       `mapstructure:"masters" validate:"required,dive"`
 	WorkerNodePools                   []WorkerConfig     `mapstructure:"worker_node_pools" validate:"dive"`
@@ -56,7 +56,7 @@ type WorkerConfig struct {
 	Name          string `mapstructure:"name" validate:"required"`
 	InstanceType  string `mapstructure:"instance_type" validate:"required"`
 	InstanceCount int    `mapstructure:"instance_count" validate:"gt=0,required"`
-	Location      string `mapstructure:"location" validate:"omitempty,oneof=nbg1 fsn1 hel1 ash"`
+	Location      string `mapstructure:"location" validate:"omitempty,oneof=nbg1 fsn1 hel1 ash hil"`
 }
 
 type AutoscalerConfig struct {
@@ -64,7 +64,7 @@ type AutoscalerConfig struct {
 	InstanceType string `mapstructure:"instance_type" validate:"required"`
 	InstanceMin  int    `mapstructure:"instance_min" validate:"omitempty,gte=0,required"`
 	InstanceMax  int    `mapstructure:"instance_max" validate:"gt=0,gtefield=InstanceMin,required"`
-	Location     string `mapstructure:"location" validate:"omitempty,oneof=nbg1 fsn1 hel1 ash"`
+	Location     string `mapstructure:"location" validate:"omitempty,oneof=nbg1 fsn1 hel1 ash hil"`
 }
 
 func InitViper() {
