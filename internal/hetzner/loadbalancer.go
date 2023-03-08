@@ -9,7 +9,12 @@ import (
 	"hetzner-k3s/internal/cluster"
 )
 
-func (c *Client) CreateLoadBalancer(ctx context.Context, cluster *cluster.Cluster, network *hcloud.Network) (
+func (c *Client) CreateLoadBalancer(
+	ctx context.Context,
+	cluster *cluster.Cluster,
+	network *hcloud.Network,
+	location *hcloud.Location,
+) (
 	lb *hcloud.LoadBalancer, err error,
 ) {
 	lbName := cluster.ClusterName + "-api"
@@ -43,7 +48,7 @@ func (c *Client) CreateLoadBalancer(ctx context.Context, cluster *cluster.Cluste
 				LoadBalancerType: &hcloud.LoadBalancerType{Name: "lb11"},
 				Algorithm:        &hcloud.LoadBalancerAlgorithm{Type: hcloud.LoadBalancerAlgorithmTypeRoundRobin},
 				PublicInterface:  hcloud.Bool(true),
-				NetworkZone:      hcloud.NetworkZone(cluster.ClusterNetworkZone),
+				Location:         location,
 				Network:          network,
 				Services: []hcloud.LoadBalancerCreateOptsService{
 					{

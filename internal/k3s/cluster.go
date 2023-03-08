@@ -701,7 +701,7 @@ func (c *Client) loadBalancer() *hcloud.LoadBalancer {
 		return c.cluster.LoadBalancer
 	}
 
-	lb, err := c.hetzner.CreateLoadBalancer(context.Background(), c.cluster, c.network())
+	lb, err := c.hetzner.CreateLoadBalancer(context.Background(), c.cluster, c.network(), c.masterLocation())
 	if err != nil {
 		c.logger.Sugar().Fatal("cannot create load balancer: %w", err)
 	}
