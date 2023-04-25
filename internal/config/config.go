@@ -29,6 +29,7 @@ type Config struct {
 	WorkerNodePools                   []WorkerConfig     `mapstructure:"worker_node_pools" validate:"dive"`
 	AutoscalingNodePools              []AutoscalerConfig `mapstructure:"autoscaling_node_pools" validate:"dive"`
 	ClusterAutoscalerArgs             []string           `mapstructure:"cluster_autoscaler_args" validate:"-"`
+	ClusterAutoscalerVersion          string             `mapstructure:"cluster_autoscaler_version" validate:"-"`
 	AdditionalPackages                []string           `mapstructure:"additional_packages" validate:"-"`
 	PostCreateCommands                []string           `mapstructure:"post_create_commands" validate:"-"`
 	DefaultNameservers                []string           `mapstructure:"default_nameservers" validate:"-"`

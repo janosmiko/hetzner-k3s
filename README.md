@@ -110,7 +110,7 @@ following from inside the directory where you have the config file for the clust
 docker run --rm -it \
   -v ${PWD}:/cluster \
   -v ${HOME}/.ssh:/tmp/.ssh \
-  janosmiko/hetzner-k3s:v0.1.8 \
+  janosmiko/hetzner-k3s:v0.1.9 \
   create-cluster \
   --config-file /cluster/test.yaml
 ```
@@ -180,6 +180,9 @@ autoscaling_node_pools:
 #  - --ignore-daemonsets-utilization
 #  - --ignore-mirror-pods-utilization
 #  - --v=4
+
+# Specify the version of the Cluster Autoscaler to use.
+#cluster_autoscaler_version: "v1.24.1"
 
 additional_packages:
   - somepackage

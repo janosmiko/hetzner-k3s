@@ -382,6 +382,7 @@ func (c *Client) hetznerClusterAutoscalerData() string { // nolint: funlen
 	tpldata["Image"] = c.image().Name
 	tpldata["CloudInit"] = c.autoscalerCloudInit()
 	tpldata["ClusterAutoscalerArgs"] = c.clusterAutoscalerArgs()
+	tpldata["ClusterAutoscalerVersion"] = c.clusterAutoscalerVersion()
 
 	tpl := `kubectl apply -f - <<-EOF
 ---
@@ -539,7 +540,7 @@ spec:
                   - key: node-role.kubernetes.io/master
                     operator: Exists
       containers:
-        - image: k8s.gcr.io/autoscaling/cluster-autoscaler:v1.23.0  # or your custom image
+        - image: k8s.gcr.io/autoscaling/cluster-autoscaler:{{ .ClusterAutoscalerVersion }}  # or your custom image
           name: cluster-autoscaler
           resources:
             limits:

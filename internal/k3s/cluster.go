@@ -414,6 +414,14 @@ func (c *Client) kubeProxyArgsList() string {
 	return res
 }
 
+func (c *Client) clusterAutoscalerVersion() string {
+	if c.cluster.ClusterAutoscalerVersion == "" {
+		c.cluster.ClusterAutoscalerVersion = "v1.24.1"
+	}
+
+	return c.cluster.ClusterAutoscalerVersion
+}
+
 func (c *Client) clusterAutoscalerArgs() []string {
 	stderrThresholdIsDefined := false
 
