@@ -313,7 +313,7 @@ func (c *Client) workerNodePoolDefinitions(workerNodePool *configpkg.WorkerConfi
 					"%s-%s-pool-%s-worker%d", c.clusterName(), workerNodePool.InstanceType,
 					workerNodePool.Name, i+1,
 				),
-				ServerType: &hcloud.ServerType{Name: c.masterInstanceType()},
+				ServerType: &hcloud.ServerType{Name: workerNodePool.InstanceType},
 				SSHKeys:    []*hcloud.SSHKey{c.sshKey()},
 				Networks:   []*hcloud.Network{c.network()},
 				Firewalls:  []*hcloud.ServerCreateFirewall{{Firewall: *c.firewall()}},
