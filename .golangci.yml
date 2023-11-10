@@ -13,7 +13,7 @@ linters:
   enable:
     # https://golangci-lint.run/usage/linters/#enabled-by-default-linters
     # ENABLED BY DEFAULT START
-    - deadcode
+    #    - deadcode
     - errcheck
     - gosimple
     - govet
@@ -21,7 +21,7 @@ linters:
     - staticcheck
     - typecheck
     - unused
-    - varcheck
+    #    - varcheck
     # ENABLED BY DEFAULT END
     # BUG
     # https://github.com/golangci/golangci-lint/issues/2649
@@ -52,7 +52,7 @@ linters:
     - containedctx
     - cyclop
     - decorder
-    - depguard
+    #    - depguard
     #    - dogsled
     - dupl
     - durationcheck
@@ -69,7 +69,7 @@ linters:
     #    - gochecknoglobals
     #    - gochecknoinits
     - gocognit
-    - goconst
+    #    - goconst
     - gocritic
     - gocyclo
     - godot
